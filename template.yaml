@@ -1,0 +1,30 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+
+Resources:
+  HelloLambdaFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: org.example.HelloLambda
+      Runtime: java17
+      MemorySize: 1024
+      CodeUri: ./
+      Environment:
+        Variables:
+          BucketName: !Ref S3Bucket
+      Policies:
+        - S3FullAccessPolicy:
+            BucketName: !Ref S3Bucket
+      Architectures:
+        - arm64
+
+  S3Bucket:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      BucketName: bucket-fowler-demo-erik
+
+  HelloLambdaLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Join ['/', ['/aws/lambda', !Ref HelloLambdaFunction]]
+      RetentionInDays: 30
